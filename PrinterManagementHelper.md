@@ -2,12 +2,12 @@
 
 ## Features
 
-Search for printers by name
-View printer information
-Change printer properties (Name, IP, Port) in bulk
-Produce "Change File" that contains user's desired changed
-Read and act on "Change File"
-Testing connectivity to printer ("replacing" telnet)
+- Search for printers by name
+- View printer information
+- Change printer properties (Name, IP, Port) in bulk
+- Produce "Change File" that contains user's desired changed
+- Read and act on "Change File"
+- Testing connectivity to printer ("replacing" telnet)
 
 ## User Stories
 
@@ -25,8 +25,8 @@ Given the employee has a change file from the program, when they choose to load 
 
 ## Data Models
 
-TCP/IP Printer
-  Printer Name
-  IP Address
-  Port Number
+### TCP/IP Printer
+- Printer Name
+- IP Address
+- Port Number
   
