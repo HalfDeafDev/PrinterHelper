@@ -19,11 +19,23 @@
     <StackPanel>
         <TextBlock Text="Printers:" />
         <Grid>
-            <TextBlock Text="Printers Loading" Visibility="{Binding IsLoading, Converter={StaticResource boolToVis}}"/>
-            <ListView ItemsSource="{Binding Printers}" 
-                      Visibility="{Binding IsLoaded, Converter={StaticResource boolToVis}}"
-                      SelectionMode="Single"
-                      SelectedItem="{Binding SelectedPrinter}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="5*"/>
+                <RowDefinition Height="3*"/>
+                <RowDefinition Height="2*"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+            <ListView
+                Grid.Row="0"
+                Grid.ColumnSpan="2"
+                ItemsSource="{Binding Printers}"
+                SelectionMode="Single"
+                SelectedItem="{Binding SelectedPrinter}"
+                ScrollViewer.VerticalScrollBarVisibility="Visible"
+                ScrollViewer.CanContentScroll="False">
                 <ListView.ItemTemplate>
                     <DataTemplate>
                         <StackPanel Orientation="Horizontal">
@@ -42,16 +54,7 @@
                     </DataTemplate>
                 </ListView.ItemTemplate>
             </ListView>
-        </Grid>
-        <Grid>
-            <Grid.RowDefinitions>
-                <RowDefinition />
-            </Grid.RowDefinitions>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition />
-                <ColumnDefinition />
-            </Grid.ColumnDefinitions>
-            <StackPanel>
+            <StackPanel Grid.Row="1">
                 <TextBlock Text="Name" />
                 <TextBox Text="{Binding PrinterModifications.Name, UpdateSourceTrigger=PropertyChanged}" />
                 <TextBlock Text="Host Address"/>
@@ -61,7 +64,7 @@
                 <TextBlock Text="Port Name"/>
                 <TextBox Text="{Binding PrinterModifications.PortName, UpdateSourceTrigger=PropertyChanged}"/>
             </StackPanel>
-            <StackPanel Grid.Column="1">
+            <StackPanel Grid.Row="1" Grid.Column="1">
                 <TextBlock Text="Name" />
                 <TextBlock Text="{Binding PrinterModifications.Name}" />
                 <TextBlock Text="Host Address"/>
@@ -71,7 +74,7 @@
                 <TextBlock Text="PortName"/>
                 <TextBlock Text="{Binding PrinterModifications.PortName}"/>
             </StackPanel>
+            <Button Grid.Row="2" Grid.ColumnSpan="2" Command="{Binding UpdatePrinter}" Content="Update Printer" />
         </Grid>
-        <Button Command="{Binding UpdatePrinter}" Content="Update Printer" />
     </StackPanel>
 </Window>

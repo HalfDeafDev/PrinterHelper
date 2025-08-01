@@ -39,11 +39,6 @@ namespace PrinterHelper.ViewModels
             get => _printers;
             set
             {
-                if (IsLoading)
-                {
-                    IsLoading = !IsLoading;
-                    IsLoaded = !IsLoaded;
-                }
                 SetProperty(ref _printers, value);
             }
         }
@@ -99,7 +94,7 @@ namespace PrinterHelper.ViewModels
 
         private async Task LoadPrintersAsync()
         {
-            Printers = await PrinterDataAccessor.GetConnectedPrintersAsync();
+            await PrinterDataAccessor.InitializeMinimalPrinterInformation(Printers);
         }
     }
 }

@@ -18,6 +18,67 @@ namespace PrinterHelper.DataAccessors
             return property.Value?.ToString() ?? alt;
         }
 
+        /// <summary>
+        /// Populates an ObservableCollection with Printer Names and Port Names
+        /// </summary>
+        /// <param name="printers">An empty ObservableCollection ready to be filled.</param>
+        /// <returns></returns>
+        public static async Task InitializeMinimalPrinterInformation(ObservableCollection<TCPPrinter> printers)
+        {
+            if (printers.Count > 0)
+            {
+                printers.Clear();
+            }
+
+            await Task.Run(() =>
+            {
+                ManagementScope scope = new(ManagementPath.DefaultPath);
+                SelectQuery tcpPrinterQuery = new($"select Name, __SERVER from Win32_TCPIPPrinterPort");
+
+                ManagementObjectSearcher tcpPrinterSearcher = new(scope, tcpPrinterQuery);
+                ManagementObjectCollection tcpPrinters = tcpPrinterSearcher.Get();
+
+                SelectQuery localPrinterQuery = new($"select Name, PortName, __PATH from Win32_Printer");
+
+                ManagementObjectSearcher localPrinterSearcher = new(scope, localPrinterQuery);
+                ManagementObjectCollection localPrinters = localPrinterSearcher.Get();
+
+                Dictionary<string, TCPPrinter> _printers = new();
+
+                foreach (ManagementObject tcpPrinter in tcpPrinters)
+                {
+                    TCPPrinter printer = new()
+                    {
+                        PortName = AsString(tcpPrinter.Properties["Name"]),
+                        TcpPrinterRelPath = AsString(tcpPrinter.Properties["__PATH"]),
+                        Server = AsString(tcpPrinter.Properties["__SERVER"])
+                    };
+
+                    _printers.Add(printer.PortName, printer);
+                }
+
+                foreach (ManagementObject localPrinter in localPrinters)
+                {
+                    _printers.TryGetValue(AsString(localPrinter.Properties["PortName"]), out TCPPrinter? printer);
+
+                    if (printer == null) continue;
+
+                    printer.Name = AsString(localPrinter.Properties["Name"]);
+                    printer.PrinterRelPath = AsString(localPrinter.Properties["__PATH"]);
+
+                    Application.Current.Dispatcher.InvokeAsync(() =>
+                    {
+                        printers.Add(printer);
+                    });
+                }
+
+                tcpPrinterSearcher.Dispose();
+                tcpPrinters.Dispose();
+                localPrinterSearcher.Dispose();
+                localPrinters.Dispose();
+            });
+        }
+
         public static async Task<ObservableCollection<TCPPrinter>> GetConnectedPrintersAsync()
         {
             ObservableCollection<TCPPrinter> printers = await Task.Run(() =>
