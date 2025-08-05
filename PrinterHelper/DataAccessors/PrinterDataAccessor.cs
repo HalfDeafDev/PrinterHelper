@@ -35,7 +35,7 @@ namespace PrinterHelper.DataAccessors
         /// </summary>
         /// <param name="printers">An empty ObservableCollection ready to be filled.</param>
         /// <returns></returns>
-        public static async Task InitializeMinimalPrinterInformationAsync(ObservableCollection<TCPPrinter> printers)
+        public static async Task InitializePrinterInformationAsync(ObservableCollection<TCPPrinter> printers)
         {
             if (printers.Count > 0)
             {
@@ -46,7 +46,7 @@ namespace PrinterHelper.DataAccessors
             {
                 Dictionary<string, TCPPrinter> _printers = new();
 
-                WmiQueryHelper.Execute($"select Name, __SERVER from Win32_TCPIPPrinterPort", (ManagementObjectCollection collection) =>
+                WmiQueryHelper.Execute($"select Name, HostAddress, PortNumber, __SERVER from Win32_TCPIPPrinterPort", (ManagementObjectCollection collection) =>
                 {
                     foreach (ManagementObject tcpPrinter in collection)
                     {
@@ -54,6 +54,8 @@ namespace PrinterHelper.DataAccessors
                         {
                             PortName = AsString(tcpPrinter.Properties["Name"]),
                             TcpPrinterRelPath = AsString(tcpPrinter.Properties["__PATH"]),
+                            HostAddress = AsString(tcpPrinter.Properties["HostAddress"]),
+                            Port = Int32.Parse(AsString(tcpPrinter.Properties["PortNumber"])),
                             Server = AsString(tcpPrinter.Properties["__SERVER"])
                         };
 
@@ -79,69 +81,6 @@ namespace PrinterHelper.DataAccessors
                     }
                 });
             });
-        }
-
-        public static async Task LoadFullPrinterInformation(List<TCPPrinter> printers)
-        {
-
-        }
-
-        public static async Task<ObservableCollection<TCPPrinter>> GetConnectedPrintersAsync()
-        {
-            ObservableCollection<TCPPrinter> printers = await Task.Run(() =>
-            {
-                List<TCPPrinter> listOfPrinters = new();
-
-                ManagementScope scope = new ManagementScope(ManagementPath.DefaultPath);
-                SelectQuery wmiTCPIPPrinterQuery = new SelectQuery($"select * from Win32_TCPIPPrinterPort");
-
-                ManagementObjectSearcher wmiTCPIPPrinterSearcher = new ManagementObjectSearcher(scope, wmiTCPIPPrinterQuery);
-                ManagementObjectCollection wmiTCPIPPrinters = wmiTCPIPPrinterSearcher.Get();
-
-                foreach (ManagementObject wmiTCPIPPrinter in wmiTCPIPPrinters)
-                {
-                    try
-                    {
-                        string printerPortName = AsString(wmiTCPIPPrinter.Properties["Name"]);
-                        SelectQuery printerNameQuery = new SelectQuery($"select * from Win32_Printer Where PortName=\"{printerPortName}\"");
-
-                        using (ManagementObjectSearcher printerSearcher = new ManagementObjectSearcher(scope, printerNameQuery))
-                        using (ManagementObject? printer = printerSearcher.Get().OfType<ManagementObject>().FirstOrDefault())
-                        {
-                            if (printer is not null)
-                            {
-                                string _server = AsString(wmiTCPIPPrinter.Properties["__SERVER"]);
-                                string printerName = AsString(printer.Properties["Name"]);
-
-                                TCPPrinter tcpPrinter = new()
-                                {
-                                    Name = printerName,
-                                    HostAddress = AsString(wmiTCPIPPrinter.Properties["HostAddress"]),
-                                    PortName = printerPortName,
-                                    Port = int.Parse(AsString(wmiTCPIPPrinter.Properties["PortNumber"])),
-                                    Server = _server,
-                                    TcpPrinterRelPath = AsTcpPrinterRelPath(printerPortName, _server),
-                                    PrinterRelPath = AsPrinterRelPath(printerName, _server)
-                                };
-
-                                listOfPrinters.Add(tcpPrinter);
-                            }
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        Trace.WriteLine("Something went wrong when getting a printer");
-                        Trace.WriteLine(ex);
-                    }
-                }
-
-                wmiTCPIPPrinters.Dispose();
-                wmiTCPIPPrinterSearcher.Dispose();
-
-                return new ObservableCollection<TCPPrinter>(listOfPrinters);
-            });
-
-            return printers;
         }
 
         private static string AsPrinterRelPath(string name, string server)

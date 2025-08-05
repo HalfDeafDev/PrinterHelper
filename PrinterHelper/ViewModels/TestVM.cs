@@ -94,7 +94,7 @@ namespace PrinterHelper.ViewModels
 
         private async Task LoadPrintersAsync()
         {
-            await PrinterDataAccessor.InitializeMinimalPrinterInformation(Printers);
+            await PrinterDataAccessor.InitializePrinterInformationAsync(Printers);
         }
     }
 }
