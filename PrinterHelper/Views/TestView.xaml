@@ -56,23 +56,23 @@
             </ListView>
             <StackPanel Grid.Row="1">
                 <TextBlock Text="Name" />
-                <TextBox Text="{Binding PrinterModifications.Name, UpdateSourceTrigger=PropertyChanged}" />
+                <TextBox Text="{Binding PrinterModifications.Name.Value, UpdateSourceTrigger=PropertyChanged}" />
                 <TextBlock Text="Host Address"/>
-                <TextBox Text="{Binding PrinterModifications.HostAddress, UpdateSourceTrigger=PropertyChanged}"/>
+                <TextBox Text="{Binding PrinterModifications.HostAddress.Value, UpdateSourceTrigger=PropertyChanged}"/>
                 <TextBlock Text="Port"/>
-                <TextBox Text="{Binding PrinterModifications.Port, UpdateSourceTrigger=PropertyChanged}"/>
+                <TextBox Text="{Binding PrinterModifications.Port.Value, UpdateSourceTrigger=PropertyChanged}"/>
                 <TextBlock Text="Port Name"/>
-                <TextBox Text="{Binding PrinterModifications.PortName, UpdateSourceTrigger=PropertyChanged}"/>
+                <TextBox Text="{Binding PrinterModifications.PortName.Value, UpdateSourceTrigger=PropertyChanged}"/>
             </StackPanel>
             <StackPanel Grid.Row="1" Grid.Column="1">
                 <TextBlock Text="Name" />
-                <TextBlock Text="{Binding PrinterModifications.Name}" />
+                <TextBlock Text="{Binding PrinterModifications.Name.Value}" />
                 <TextBlock Text="Host Address"/>
-                <TextBlock Text="{Binding PrinterModifications.HostAddress}"/>
+                <TextBlock Text="{Binding PrinterModifications.HostAddress.Value}"/>
                 <TextBlock Text="Port"/>
-                <TextBlock Text="{Binding PrinterModifications.Port}"/>
+                <TextBlock Text="{Binding PrinterModifications.Port.Value}"/>
                 <TextBlock Text="PortName"/>
-                <TextBlock Text="{Binding PrinterModifications.PortName}"/>
+                <TextBlock Text="{Binding PrinterModifications.PortName.Value}"/>
             </StackPanel>
             <Button Grid.Row="2" Grid.ColumnSpan="2" Command="{Binding UpdatePrinter}" Content="Update Printer" />
         </Grid>

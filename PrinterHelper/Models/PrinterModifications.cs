@@ -1,24 +1,61 @@
 ﻿using PrinterHelper.Helpers;
 using System;
+using System.CodeDom;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
+using System.Security.RightsManagement;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace PrinterHelper.Models
 {
+    public class Trackable<T> : ObservableObject
+    {
+        private T _original;
+        protected T _value;
+
+        public T Value
+        {
+            get => _value;
+            set => SetProperty(ref _value, value);
+        }
+
+        public Trackable(T value)
+        {
+            _value = value;
+            _original = value;
+        }
+
+        public bool HasChanged()
+        {
+            if (_value is not null && !_value.Equals(_original))
+            {
+                return true;
+            } else
+            {
+                return false;
+            }
+        }
+    }
+
     public class PrinterModifications : ObservableObject
     {
-        private string _name = "";
-        public string Name { get => _name; set => SetProperty(ref _name, value); }
-        
-        private string _hostAddress = "";
-        public string HostAddress { get => _hostAddress; set => SetProperty(ref _hostAddress, value); }
+        //private PrinterModifications original;
+        public Trackable<string> Name { get; }
 
-        private string _portName = "";
-        public string PortName { get => _portName; set => SetProperty(ref _portName, value); }
-        
-        private int _port = 0;
-        public int Port { get => _port; set => SetProperty(ref _port, value); }
+        public Trackable<string> HostAddress { get; }
+
+        public Trackable<string> PortName { get; }
+
+        public Trackable<int> Port { get; }
+
+        public PrinterModifications(string name = "", string hostAddress = "", string portName = "", int port = 0)
+        {
+            Name = new(name);
+            HostAddress = new(hostAddress);
+            PortName = new(portName);
+            Port = new(port);
+        }
     }
 }

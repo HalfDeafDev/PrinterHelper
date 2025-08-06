@@ -59,18 +59,12 @@ namespace PrinterHelper.ViewModels
 
         private void SetModificationPropertiesFromPrinter(PrinterModifications printerModifications, TCPPrinter printer)
         {
-            printerModifications.Name = printer.Name;
-            printerModifications.HostAddress = printer.HostAddress;
-            printerModifications.Port = printer.Port;
-            printerModifications.PortName = printer.PortName;
+            PrinterModifications = new(printer.Name, printer.HostAddress, printer.PortName, printer.Port);
         }
 
         private void ClearModificationPropertiesFromPrinter()
         {
-            printerModifications.Name = "";
-            printerModifications.HostAddress = "";
-            printerModifications.Port = 0;
-            printerModifications.PortName = "";
+            PrinterModifications = new();
         }
 
         private void updatePrinter()
