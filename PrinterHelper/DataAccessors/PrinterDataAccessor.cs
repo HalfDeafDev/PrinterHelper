@@ -50,16 +50,17 @@ namespace PrinterHelper.DataAccessors
                 {
                     foreach (ManagementObject tcpPrinter in collection)
                     {
-                        TCPPrinter printer = new()
-                        {
-                            PortName = AsString(tcpPrinter.Properties["Name"]),
-                            TcpPrinterRelPath = AsString(tcpPrinter.Properties["__PATH"]),
-                            HostAddress = AsString(tcpPrinter.Properties["HostAddress"]),
-                            Port = Int32.Parse(AsString(tcpPrinter.Properties["PortNumber"])),
-                            Server = AsString(tcpPrinter.Properties["__SERVER"])
-                        };
+                        TCPPrinter printer = new(
+                            "",
+                            AsString(tcpPrinter.Properties["Name"]),
+                            AsString(tcpPrinter.Properties["HostAddress"]),
+                            Int32.Parse(AsString(tcpPrinter.Properties["PortNumber"])),
+                            AsString(tcpPrinter.Properties["__SERVER"]),
+                            "",
+                            AsString(tcpPrinter.Properties["__PATH"])
+                        );
 
-                        _printers.Add(printer.PortName, printer);
+                        _printers.Add(printer.PortName.Value, printer);
                     }
                 });
 
@@ -71,8 +72,8 @@ namespace PrinterHelper.DataAccessors
 
                         if (printer == null) continue;
 
-                        printer.Name = AsString(localPrinter.Properties["Name"]);
-                        printer.PrinterRelPath = AsString(localPrinter.Properties["__PATH"]);
+                        printer.Name.Solidify(AsString(localPrinter.Properties["Name"]));
+                        printer.PrinterRelPath.Solidify(AsString(localPrinter.Properties["__PATH"]));
 
                         Application.Current.Dispatcher.InvokeAsync(() =>
                         {
@@ -93,74 +94,75 @@ namespace PrinterHelper.DataAccessors
             return $@"\\{server}\root\cimv2:Win32_TCPIPPrinterPort.Name=""{name}""";
         }
 
-        public static void ModifyTCPPrinter(ref TCPPrinter printer, PrinterModifications printerModifications)
+        public static void ModifyTCPPrinter(TCPPrinter printer)
         {
-            if (printerModifications.Name.HasChanged())
+            if (printer.Name.HasChanged())
             {
-                using (ManagementObject moPrinter = new ManagementObject(printer.PrinterRelPath))
+                using (ManagementObject moPrinter = new ManagementObject(printer.PrinterRelPath.Value))
                 {
                     moPrinter.Get();
 
-                    uint result = (uint)moPrinter.InvokeMethod("RenamePrinter", new object[] { printerModifications.Name.Value });
+                    uint result = (uint)moPrinter.InvokeMethod("RenamePrinter", new object[] { printer.Name.Value });
 
                     if (result == 0) // Success
                     {
-                        printer.PrinterRelPath = AsPrinterRelPath(printerModifications.Name.Value, printer.Server);
+                        printer.PrinterRelPath.Solidify(AsPrinterRelPath(printer.Name.Value, printer.Server.Value));
+                        printer.Name.Solidify();
                     }
                 }
             }
 
-            using (ManagementObject moTCPPrinter = new ManagementObject(printer.TcpPrinterRelPath))
+            using (ManagementObject moTCPPrinter = new ManagementObject(printer.TCPPrinterRelPath.Value))
             {
                 moTCPPrinter.Get();
 
-                if (printerModifications.HostAddress.HasChanged())
+                if (printer.HostAddress.HasChanged())
                 {
-                    moTCPPrinter.Properties["HostAddress"].Value = printerModifications.HostAddress.Value;
+                    moTCPPrinter.Properties["HostAddress"].Value = printer.HostAddress.Value;
 
                     string newManagementPath = moTCPPrinter.Put().ToString();
 
                     if (newManagementPath != null)
                     {
-                        if (printer.TcpPrinterRelPath != newManagementPath) printer.TcpPrinterRelPath = newManagementPath;
-                        printer.HostAddress = printerModifications.HostAddress.Value;
+                        if (printer.TCPPrinterRelPath.Value != newManagementPath) printer.TCPPrinterRelPath.Solidify(newManagementPath);
+                        printer.HostAddress.Solidify();
                     }
                 }
 
-                if (printerModifications.Port.HasChanged())
+                if (printer.Port.HasChanged())
                 {
-                    moTCPPrinter.Properties["PortNumber"].Value = printerModifications.Port.Value;
+                    moTCPPrinter.Properties["PortNumber"].Value = printer.Port.Value;
 
                     string newManagementPath = moTCPPrinter.Put().ToString();
 
                     if (newManagementPath != null)
                     {
-                        if (printer.TcpPrinterRelPath != newManagementPath) printer.TcpPrinterRelPath = newManagementPath;
-                        printer.Port = printerModifications.Port.Value;
+                        if (printer.TCPPrinterRelPath.Value != newManagementPath) printer.TCPPrinterRelPath.Solidify(newManagementPath);
+                        printer.Port.Solidify();
                     }
                 }
 
-                if (printerModifications.PortName.HasChanged())
+                if (printer.PortName.HasChanged())
                 {
                     string oldPortName = AsString(moTCPPrinter.Properties["Name"]);
 
-                    moTCPPrinter.Properties["Name"].Value = printerModifications.PortName.Value;
+                    moTCPPrinter.Properties["Name"].Value = printer.PortName.Value;
 
                     string newManagementPath = moTCPPrinter.Put().ToString();
 
                     if (newManagementPath != null)
                     {
-                        if (printer.TcpPrinterRelPath != newManagementPath) printer.TcpPrinterRelPath = newManagementPath;
-                        printer.PortName = printerModifications.PortName.Value;
+                        if (printer.TCPPrinterRelPath.Value != newManagementPath) printer.TCPPrinterRelPath.Solidify(newManagementPath);
+                        printer.PortName.Solidify();
 
-                        using (ManagementObject moPrinter = new ManagementObject(printer.PrinterRelPath))
+                        using (ManagementObject moPrinter = new ManagementObject(printer.PrinterRelPath.Value))
                         {
                             moPrinter.Get();
-                            moPrinter.Properties["PortName"].Value = printer.PortName;
+                            moPrinter.Properties["PortName"].Value = printer.PortName.Value;
                             moPrinter.Put();
                         }
 
-                        using (ManagementObject moPrinterPort = new ManagementObject(AsTcpPrinterRelPath(oldPortName, printer.Server)))
+                        using (ManagementObject moPrinterPort = new ManagementObject(AsTcpPrinterRelPath(oldPortName, printer.Server.Value)))
                         {
                             moPrinterPort.Get();
                             moPrinterPort.Delete();

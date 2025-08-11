@@ -20,6 +20,15 @@ namespace PrinterHelper.ViewModels
 {
     public class TestVM : ObservableObject
     {
+        private string printerNameFilter = "";
+        public string PrinterNameFilter { get => printerNameFilter; set => SetProperty(ref printerNameFilter, value); }
+        private string ipFilter = "";
+        public string IPFilter { get => ipFilter; set => SetProperty(ref ipFilter, value); }
+        private string portFilter = "";
+        public string PortFilter { get => portFilter; set => SetProperty(ref portFilter, value); }
+        private bool useRegex = false;
+        public bool UseRegex { get => useRegex; set => SetProperty(ref useRegex, value); }
+
         private bool isLoading = true;
         public bool IsLoading
         {
@@ -51,39 +60,19 @@ namespace PrinterHelper.ViewModels
             set
             {
                 SetProperty(ref _selectedPrinter, value);
-
-                if (value != null) SetModificationPropertiesFromPrinter(PrinterModifications, value);
-                else ClearModificationPropertiesFromPrinter();
             }
-        }
-
-        private void SetModificationPropertiesFromPrinter(PrinterModifications printerModifications, TCPPrinter printer)
-        {
-            PrinterModifications = new(printer.Name, printer.HostAddress, printer.PortName, printer.Port);
-        }
-
-        private void ClearModificationPropertiesFromPrinter()
-        {
-            PrinterModifications = new();
         }
 
         private void updatePrinter()
         {
-            if (_selectedPrinter != null) PrinterDataAccessor.ModifyTCPPrinter(ref _selectedPrinter, PrinterModifications);
+            if (_selectedPrinter != null) PrinterDataAccessor.ModifyTCPPrinter(_selectedPrinter);
         }
         public ICommand UpdatePrinter { get; }
-
-        private PrinterModifications printerModifications = new();
-        public PrinterModifications PrinterModifications
-        {
-            get => printerModifications;
-            set => SetProperty(ref printerModifications, value);
-        }
 
         public TestVM()
         {
             _ = LoadPrintersAsync();
-            UpdatePrinter = new RelayCommand(_ => updatePrinter(), _ => SelectedPrinter != null);
+            UpdatePrinter = new RelayCommand(_ => updatePrinter(), _ => SelectedPrinter != null); 
         }
 
         private async Task LoadPrintersAsync()

@@ -5,6 +5,8 @@ VisualStudioVersion = 17.14.36202.13
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PrinterHelper", "PrinterHelper\PrinterHelper.csproj", "{4F043B37-880B-45E5-8C49-4C64B1A09E11}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PrinterHelperTesting", "PrinterHelperTesting\PrinterHelperTesting.csproj", "{E95AE6BB-C2A5-4CD2-9FF0-F79FC9EE8109}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{4F043B37-880B-45E5-8C49-4C64B1A09E11}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4F043B37-880B-45E5-8C49-4C64B1A09E11}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4F043B37-880B-45E5-8C49-4C64B1A09E11}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E95AE6BB-C2A5-4CD2-9FF0-F79FC9EE8109}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E95AE6BB-C2A5-4CD2-9FF0-F79FC9EE8109}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E95AE6BB-C2A5-4CD2-9FF0-F79FC9EE8109}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E95AE6BB-C2A5-4CD2-9FF0-F79FC9EE8109}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

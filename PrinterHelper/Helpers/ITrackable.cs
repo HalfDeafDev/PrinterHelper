@@ -4,9 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PrinterHelper.Models
+namespace PrinterHelper.Helpers
 {
-    internal class PrinterChangeTracker
+    public interface ITrackable
     {
+        bool HasChanged();
+        void Solidify();
     }
 }

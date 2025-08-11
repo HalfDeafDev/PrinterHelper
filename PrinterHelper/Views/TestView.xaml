@@ -12,11 +12,25 @@
         <vm:TestVM />
     </Window.DataContext>
 
-    <Window.Resources>
-        <BooleanToVisibilityConverter x:Key="boolToVis" />
-    </Window.Resources>
-    
     <StackPanel>
+        <StackPanel.Resources>
+            <Style TargetType="TextBox">
+                <Setter Property="MinWidth" Value="100" />
+            </Style>
+            <Style TargetType="CheckBox">
+                <Setter Property="VerticalAlignment" Value="Center" />
+                <Setter Property="Margin" Value="5,0" />
+            </Style>
+        </StackPanel.Resources>
+        <StackPanel Orientation="Horizontal">
+            <Label Content="Printer Name:"/>
+            <TextBox Text="{Binding PrinterNameFilter}" />
+            <Label Content="IP:"/>
+            <TextBox Text="{Binding IPFilter}" />
+            <Label Content="Port:"/>
+            <TextBox Text="{Binding PortFilter}" />
+            <CheckBox Content="Use Regular Expressions" IsChecked="{Binding UseRegex}" />
+        </StackPanel>
         <TextBlock Text="Printers:" />
         <Grid>
             <Grid.RowDefinitions>
@@ -28,51 +42,55 @@
                 <ColumnDefinition />
                 <ColumnDefinition />
             </Grid.ColumnDefinitions>
-            <ListView
+            <ListBox
                 Grid.Row="0"
                 Grid.ColumnSpan="2"
                 ItemsSource="{Binding Printers}"
-                SelectionMode="Single"
                 SelectedItem="{Binding SelectedPrinter}"
                 ScrollViewer.VerticalScrollBarVisibility="Visible"
                 ScrollViewer.CanContentScroll="False">
-                <ListView.ItemTemplate>
+                <ListBox.Resources>
+                    <Style TargetType="ListBoxItem">
+                        <Setter Property="Focusable" Value="True" />
+                    </Style>
+                </ListBox.Resources>
+                <ListBox.ItemTemplate>
                     <DataTemplate>
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="{Binding Name}" Margin="2"/>
-                            <TextBlock Text="|"/>
-                            <TextBlock Text="{Binding HostAddress}" Margin="2"/>
-                            <TextBlock Text="|"/>
-                            <TextBlock Text="{Binding Port}" Margin="2"/>
-                            <TextBlock Text="|"/>
-                            <TextBlock Text="{Binding PortName}" Margin="2"/>
-                            <TextBlock Text="|"/>
-                            <TextBlock Text="{Binding PrinterRelPath}" Margin="2"/>
-                            <TextBlock Text="|"/>
-                            <TextBlock Text="{Binding TcpPrinterRelPath}" Margin="2"/>
-                        </StackPanel>
+                        <Grid>
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                <CheckBox />
+                                <StackPanel>
+                                    <Label Content="{Binding Name.SolidValue}" FontWeight="Bold"/>
+                                    <StackPanel Orientation="Horizontal" Margin="5, 0, 0, 10">
+                                        <TextBlock Text="{Binding HostAddress.SolidValue}" />
+                                        <TextBlock Text=":" />
+                                        <TextBlock Text="{Binding Port.SolidValue}" />
+                                    </StackPanel>
+                                </StackPanel>
+                            </StackPanel>
+                        </Grid>
                     </DataTemplate>
-                </ListView.ItemTemplate>
-            </ListView>
+                </ListBox.ItemTemplate>
+            </ListBox>
             <StackPanel Grid.Row="1">
                 <TextBlock Text="Name" />
-                <TextBox Text="{Binding PrinterModifications.Name.Value, UpdateSourceTrigger=PropertyChanged}" />
+                <TextBox Text="{Binding SelectedPrinter.Name.Value, UpdateSourceTrigger=PropertyChanged}" />
                 <TextBlock Text="Host Address"/>
-                <TextBox Text="{Binding PrinterModifications.HostAddress.Value, UpdateSourceTrigger=PropertyChanged}"/>
+                <TextBox Text="{Binding SelectedPrinter.HostAddress.Value, UpdateSourceTrigger=PropertyChanged}"/>
                 <TextBlock Text="Port"/>
-                <TextBox Text="{Binding PrinterModifications.Port.Value, UpdateSourceTrigger=PropertyChanged}"/>
+                <TextBox Text="{Binding SelectedPrinter.Port.Value, UpdateSourceTrigger=PropertyChanged}"/>
                 <TextBlock Text="Port Name"/>
-                <TextBox Text="{Binding PrinterModifications.PortName.Value, UpdateSourceTrigger=PropertyChanged}"/>
+                <TextBox Text="{Binding SelectedPrinter.PortName.Value, UpdateSourceTrigger=PropertyChanged}"/>
             </StackPanel>
             <StackPanel Grid.Row="1" Grid.Column="1">
                 <TextBlock Text="Name" />
-                <TextBlock Text="{Binding PrinterModifications.Name.Value}" />
+                <TextBlock Text="{Binding SelectedPrinter.Name.SolidValue}" />
                 <TextBlock Text="Host Address"/>
-                <TextBlock Text="{Binding PrinterModifications.HostAddress.Value}"/>
+                <TextBlock Text="{Binding SelectedPrinter.HostAddress.SolidValue}"/>
                 <TextBlock Text="Port"/>
-                <TextBlock Text="{Binding PrinterModifications.Port.Value}"/>
+                <TextBlock Text="{Binding SelectedPrinter.Port.SolidValue}"/>
                 <TextBlock Text="PortName"/>
-                <TextBlock Text="{Binding PrinterModifications.PortName.Value}"/>
+                <TextBlock Text="{Binding SelectedPrinter.PortName.SolidValue}"/>
             </StackPanel>
             <Button Grid.Row="2" Grid.ColumnSpan="2" Command="{Binding UpdatePrinter}" Content="Update Printer" />
         </Grid>
